@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectIn - 全ての学生に挑戦の場を</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 2rem;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: white;
+            letter-spacing: 0.02em;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(52,152,219,0.3);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(52,152,219,0.4);
+        }
+
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            border-radius: 2px;
+        }
+
+        .problem-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            border: 2px solid #f8f9fa;
+            position: relative;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 2px solid #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        .service-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-features {
+            list-style: none;
+        }
+
+        .service-features li {
+            padding: 0.5rem 0;
+            color: #555;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .service-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        .vision-section {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+            margin-top: 5rem;
+            position: relative;
+        }
+
+        .vision-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .vision-section h2 {
+            color: white;
+            font-size: 2.8rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .vision-section p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(30,60,114,0.1), rgba(42,82,152,0.1));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 3rem 1rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-circle" style="width: 200px; height: 200px; top: 10%; left: 10%; animation-delay: 0s;"></div>
+        <div class="floating-circle" style="width: 150px; height: 150px; top: 20%; right: 15%; animation-delay: 2s;"></div>
+        <div class="floating-circle" style="width: 100px; height: 100px; top: 60%; left: 5%; animation-delay: 4s;"></div>
+        <div class="floating-circle" style="width: 180px; height: 180px; bottom: 20%; right: 10%; animation-delay: 1s;"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>ConnectIn</h1>
+            <p>全ての学生に挑戦の場を<br>研究だけじゃない、もっと熱い大学生活を</p>
+            <a href="#services" class="cta-button">今すぐ始める</a>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="section">
+        <h2>なぜConnectInが必要なのか</h2>
+        <div class="problem-stats">
+            <div class="stat-card">
+                <div class="stat-number">6倍</div>
+                <div class="stat-label">大学生のうつ病罹患率<br>（一般人口比）</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">130+</div>
+                <div class="stat-label">広島大学のサークル数<br>（情報が分散）</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">多数</div>
+                <div class="stat-label">参加を諦めた学生<br>（情報不足が原因）</div>
+            </div>
+        </div>
+        <div style="text-align: center; font-size: 1.2rem; color: #666; max-width: 800px; margin: 0 auto;">
+            <p>「周りが優秀すぎて辛い」「新歓シーズンを逃してもう入れない」「院生だから受け入れてもらえない」</p>
+            <p style="margin-top: 1rem; font-weight: 600; color: #1e3c72;">研究室以外のコミュニティがない学生が、今も苦しんでいます。</p>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="section" id="services">
+        <h2>ConnectInの3つのソリューション</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <h3 class="service-title">探す (Discovery)</h3>
+                <p class="service-description">公式・非公式問わず、全サークル情報を一元化。あなたにぴったりのコミュニティを見つけよう。</p>
+                <ul class="service-features">
+                    <li>高度なフィルタリング（活動時間・参加条件・ジャンル）</li>
+                    <li>地図連携で活動場所を可視化</li>
+                    <li>見学予約のワンストップ化</li>
+                    <li>「院生歓迎」「初心者OK」等のタグ検索</li>
+                </ul>
+            </div>
+            
+            <div class="service-card">
+                <h3 class="service-title">作る (Create)</h3>
+                <p class="service-description">既存のサークルにないことも、仲間を見つけて新しいコミュニティを作ろう。</p>
+                <ul class="service-features">
+                    <li>やりたいこと投稿機能</li>
+                    <li>興味マッチング機能</li>
+                    <li>小規模グループ形成支援</li>
+                    <li>活動企画テンプレート提供</li>
+                </ul>
+            </div>
+            
+            <div class="service-card">
+                <h3 class="service-title">つながる (Connect)</h3>
+                <p class="service-description">参加した後も、メンバー同士で交流を深め、充実した活動を続けよう。</p>
+                <ul class="service-features">
+                    <li>各サークル専用チャット</li>
+                    <li>イベント告知・参加管理</li>
+                    <li>写真・活動記録共有</li>
+                    <li>メンバー同士の交流促進</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="vision-section">
+        <h2>目指す未来</h2>
+        <p>全ての学生が課外活動をあきらめることなく、仲間と共に限界に挑戦する未来を実現します。</p>
+        <p>研究活動と相反しない挑戦の場を、ここ広大で実証し、近大、広国大にも本ムーブメントを波及させ、次世代の研究学園都市としての東広島市を実現します。</p>
+                    <a href="#contact" class="cta-button" style="margin-top: 2rem; position: relative; z-index: 1;">一緒に未来を作ろう</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 ConnectIn. All rights reserved.</p>
+        <p>全ての学生に挑戦の場を</p>
+    </footer>
+
+    <script>
+        // GSAP animations
+        gsap.registerPlugin();
+        
+        // Hero animation
+        gsap.from(".hero-content h1", {duration: 1, y: 50, opacity: 0, delay: 0.5});
+        gsap.from(".hero-content p", {duration: 1, y: 30, opacity: 0, delay: 0.8});
+        gsap.from(".hero-content .cta-button", {duration: 1, y: 20, opacity: 0, delay: 1.1});
+        
+        // Scroll animations
+        gsap.utils.toArray('.stat-card').forEach((card, i) => {
+            gsap.from(card, {
+                duration: 0.8,
+                y: 50,
+                opacity: 0,
+                delay: i * 0.2,
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 80%",
+                    end: "bottom 20%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+        
+        gsap.utils.toArray('.service-card').forEach((card, i) => {
+            gsap.from(card, {
+                duration: 0.8,
+                y: 50,
+                opacity: 0,
+                delay: i * 0.2,
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 80%",
+                    end: "bottom 20%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
